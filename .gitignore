@@ -1,0 +1,6 @@
+*.txt
+*.class
+*.out
+*.o 
+msgsnd
+msgrcv
