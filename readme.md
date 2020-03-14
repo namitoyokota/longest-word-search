@@ -64,3 +64,4 @@ project/
 ## Additional Resources
 
 - System V Message Queue: https://www.softprayog.in/programming/interprocess-communication-using-system-v-message-queues-in-linux
+- JNI: https://www.baeldung.com/jni
