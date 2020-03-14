@@ -9,6 +9,15 @@ java:
 	javac CtCILibrary/*.java
 	javac -h . edu/cs300/MessageJNI.java
 
+test-snd:
+	./msgsnd con
+
+test-rcv:
+	./msgrcv
+
+test-java:
+	java edu.cs300.ParallelTextSearch con
+
 clean: 
 	rm -f ./msgsnd ./msgrcv
 	rm -f ./edu/cs300/*.class ./CtCILibrary/*.class
