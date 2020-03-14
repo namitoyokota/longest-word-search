@@ -9,6 +9,11 @@ java:
 	javac CtCILibrary/*.java
 	javac -h . edu/cs300/MessageJNI.java
 
+jni: 
+	export JAVA_HOME=/usr/java/latest
+	gcc -c -fPIC -I${JAVA_HOME}/include -I${JAVA_HOME}/include/linux system5msg.c -o edu_cs300_MessageJNI.o
+	gcc -shared -o libsystem5msg.so edu_cs300_MessageJNI.o -lc
+
 test-snd:
 	./msgsnd con
 
