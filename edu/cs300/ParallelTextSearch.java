@@ -3,20 +3,19 @@ package edu.cs300;
 import CtCILibrary.*;
 import java.util.concurrent.*;
 import java.io.*;
+import java.util.*;
 
 public class ParallelTextSearch {
 
   public static void main(String[] args) {
 
-    // default
-    int treeCount = 2;
-    String[][] samples = { { "conspicuous", "parallel", "withering" }, { "coping", "figure", "parachute" } };
-    ArrayBlockingQueue[] workers = new ArrayBlockingQueue[treeCount];
-    ArrayBlockingQueue resultsOutputArray = new ArrayBlockingQueue(treeCount * 10);
+    // main vars
+    int treeCount = 0, count = 0;
+    String[][] samples = { { "test0", "test0", "test0" }, { "test1", "test1", "test1" }, { "test2", "test2", "test2" },
+        { "test3", "test3", "test3" }, { "test4", "test4", "test4" }, { "test5", "test5", "test5" } };
+    ArrayList<String> filenames = new ArrayList<String>();
 
-    // my variables
-    int num_passages = 0;
-
+    // check command line input
     if (args.length == 0 || args[0].length() <= 2) {
       System.out.println("Provide prefix (min 3 characters) for search i.e. con\n");
       System.exit(0);
@@ -27,46 +26,75 @@ public class ParallelTextSearch {
       File file = new File("passages.txt"); // creates a new file instance
       FileReader fr = new FileReader(file); // reads the file
       BufferedReader br = new BufferedReader(fr); // creates a buffering character input stream
-      StringBuffer sb = new StringBuffer(); // constructs a string buffer with no characters
       String line;
       while ((line = br.readLine()) != null) {
-        new Worker(line, samples[num_passages], num_passages, workers[num_passages], resultsOutputArray).start();
-        num_passages++;
-        sb.append(line); // appends line to string buffer
-        System.out.println(line); // returns a string that textually represents the object
-        sb.append("\n"); // line feed
+        filenames.add(line);
+        count++;
       }
+      treeCount = count;
       fr.close(); // closes the stream and release the resources
     } catch (IOException e) {
       e.printStackTrace();
     }
 
-    for (int i = 0; i < num_passages; i++) {
-      workers[i] = new ArrayBlockingQueue(10);
-    }
+    // initialize workers and output array
+    /*
+     * ArrayBlockingQueue[] workers = new ArrayBlockingQueue[treeCount];
+     * ArrayBlockingQueue resultsOutputArray = new ArrayBlockingQueue(treeCount *
+     * 10);
+     */
 
+    // create new workers and start thread
+    /*
+     * for (int i = 0; i < treeCount; i++) { workers[i] = new
+     * ArrayBlockingQueue(10); new Worker(filenames.get(i), samples[i], i,
+     * workers[i], resultsOutputArray).start(); }
+     */
+
+    // trie node testing
+    ArrayList<String> list0 = extractFile(filenames.get(0));
+    ArrayList<String> list1 = extractFile(filenames.get(1));
+    ArrayList<String> list2 = extractFile(filenames.get(2));
+    ArrayList<String> list3 = extractFile(filenames.get(3));
+    ArrayList<String> list4 = extractFile(filenames.get(4));
+    ArrayList<String> list5 = extractFile(filenames.get(5));
+    Trie file0 = new Trie(list0);
+    Trie file1 = new Trie(list1);
+    Trie file2 = new Trie(list2);
+    Trie file3 = new Trie(list3);
+    Trie file4 = new Trie(list4);
+    Trie file5 = new Trie(list5);
+    System.out.println("file0: " + file0.contains("con"));
+    System.out.println("file1: " + file1.contains("con"));
+    System.out.println("file2: " + file2.contains("con"));
+    System.out.println("file3: " + file3.contains("con"));
+    System.out.println("file4: " + file4.contains("con"));
+    System.out.println("file5: " + file5.contains("con"));
+  }
+
+  /*
+   * Extract a text file and return a trie object with all of the words from the
+   * file
+   */
+  public static ArrayList<String> extractFile(String filename) {
+    ArrayList<String> list = new ArrayList<String>();
+
+    Scanner sc2 = null;
     try {
-      workers[0].put(args[0]);
-      workers[1].put(args[0]);
-      workers[2].put(args[0]);
-      workers[3].put(args[0]);
-      workers[4].put(args[0]);
-      workers[5].put(args[0]);
-    } catch (InterruptedException e) {
+      sc2 = new Scanner(new File(filename));
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
     }
-    ;
-
-    int counter = 0;
-
-    while (counter < num_passages) {
-      try {
-        String results = (String) resultsOutputArray.take();
-        System.out.println("results:" + results);
-        counter++;
-      } catch (InterruptedException e) {
+    while (sc2.hasNextLine()) {
+      Scanner s2 = new Scanner(sc2.nextLine());
+      while (s2.hasNext()) {
+        String s = s2.next();
+        list.add(s);
+        // System.out.println(s);
       }
-      ;
     }
+
+    return list;
   }
 
 }
