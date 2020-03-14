@@ -38,45 +38,23 @@ public class ParallelTextSearch {
     }
 
     // initialize workers and output array
-    /*
-     * ArrayBlockingQueue[] workers = new ArrayBlockingQueue[treeCount];
-     * ArrayBlockingQueue resultsOutputArray = new ArrayBlockingQueue(treeCount *
-     * 10);
-     */
+    ArrayBlockingQueue[] workers = new ArrayBlockingQueue[treeCount];
+    ArrayBlockingQueue resultsOutputArray = new ArrayBlockingQueue(treeCount * 10);
 
-    // create new workers and start thread
-    /*
-     * for (int i = 0; i < treeCount; i++) { workers[i] = new
-     * ArrayBlockingQueue(10); new Worker(filenames.get(i), samples[i], i,
-     * workers[i], resultsOutputArray).start(); }
-     */
-
-    // trie node testing
-    ArrayList<String> list0 = extractFile(filenames.get(0));
-    ArrayList<String> list1 = extractFile(filenames.get(1));
-    ArrayList<String> list2 = extractFile(filenames.get(2));
-    ArrayList<String> list3 = extractFile(filenames.get(3));
-    ArrayList<String> list4 = extractFile(filenames.get(4));
-    ArrayList<String> list5 = extractFile(filenames.get(5));
-    Trie file0 = new Trie(list0);
-    Trie file1 = new Trie(list1);
-    Trie file2 = new Trie(list2);
-    Trie file3 = new Trie(list3);
-    Trie file4 = new Trie(list4);
-    Trie file5 = new Trie(list5);
-    System.out.println("file0: " + file0.contains("con"));
-    System.out.println("file1: " + file1.contains("con"));
-    System.out.println("file2: " + file2.contains("con"));
-    System.out.println("file3: " + file3.contains("con"));
-    System.out.println("file4: " + file4.contains("con"));
-    System.out.println("file5: " + file5.contains("con"));
+    // worker 1 testing
+    String[] list0 = extractFile(filenames.get(0));
+    workers[0] = new ArrayBlockingQueue(10);
+    workers[0].add("con");
+    workers[0].add("but");
+    workers[0].add("yes");
+    new Worker(filenames.get(0), list0, 0, workers[0], resultsOutputArray).start();
   }
 
   /*
    * Extract a text file and return a trie object with all of the words from the
    * file
    */
-  public static ArrayList<String> extractFile(String filename) {
+  public static String[] extractFile(String filename) {
     ArrayList<String> list = new ArrayList<String>();
 
     Scanner sc2 = null;
@@ -94,7 +72,10 @@ public class ParallelTextSearch {
       }
     }
 
-    return list;
+    String[] array = new String[list.size()];
+    array = list.toArray(array);
+
+    return array;
   }
 
 }

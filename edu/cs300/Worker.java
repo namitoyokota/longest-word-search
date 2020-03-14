@@ -21,24 +21,26 @@ class Worker extends Thread {
 
   public void run() {
     System.out.println("Worker-" + this.id + " (" + this.passageName + ") thread started ...");
-    // while (true){
-    try {
-      String prefix = (String) this.prefixRequestArray.take();
-      boolean found = this.textTrieTree.contains(prefix);
+    while (this.prefixRequestArray.size() > 0) {
+      try {
+        String prefix = (String) this.prefixRequestArray.take();
+        boolean found = this.textTrieTree.contains(prefix);
 
-      if (!found) {
-        // System.out.println("Worker-"+this.id+" "+req.requestID+":"+ prefix+" ==> not
-        // found ");
-        resultsOutputArray.put(passageName + ":" + prefix + " not found");
-      } else {
-        // System.out.println("Worker-"+this.id+" "+req.requestID+":"+ prefix+" ==>
-        // "+word);
-        resultsOutputArray.put(passageName + ":" + prefix + " found");
+        if (!found) {
+          System.out.println("not found :(");
+          // System.out.println("Worker-" + this.id + " " + req.requestID + ":" + prefix +
+          // " ==> not found ");
+          resultsOutputArray.put(passageName + ":" + prefix + " not found");
+        } else {
+          System.out.println("found!");
+          // System.out.println("Worker-" + this.id + " " + req.requestID + ":" + prefix +
+          // " ==> " + word);
+          resultsOutputArray.put(passageName + ":" + prefix + " found");
+        }
+      } catch (InterruptedException e) {
+        System.out.println(e.getMessage());
       }
-    } catch (InterruptedException e) {
-      System.out.println(e.getMessage());
     }
-    // }
   }
 
 }
