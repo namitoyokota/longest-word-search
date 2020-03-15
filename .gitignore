@@ -3,5 +3,6 @@
 *.out
 *.o 
 *.so
+.vscode
 msgsnd
 msgrcv
