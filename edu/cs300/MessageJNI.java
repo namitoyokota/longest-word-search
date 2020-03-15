@@ -15,14 +15,12 @@ public class MessageJNI {
     }
 
     public static void main(String[] args) {
-        // System.out.println(new MessageJNI().readStringMsg("anderson",65));
-        // new MessageJNI().writeLongestWordResponseMsg(1, "and", 1, "Jane Austen",
-        // "andulousa", 6, 1);
         System.out.println(new MessageJNI().readPrefixRequestMsg());
+        new MessageJNI().writeLongestWordResponseMsg(1, "con", 1, "Mandfield_Park.txt", "nyokota", 1, 1);
+        new MessageJNI().writeLongestWordResponseMsg(2, "pre", 2, "Peter_Pan.txt", "nyokota", 2, 1);
+        new MessageJNI().writeLongestWordResponseMsg(3, "wor", 3, "Pride_And_Prejustice", "nyokota", 3, 1);
     }
 
-    // Declare a native method sayHello() that receives no arguments and returns
-    // void
     private static native String readStringMsg();
 
     public static native SearchRequest readPrefixRequestMsg();
