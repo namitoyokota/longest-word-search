@@ -41,13 +41,16 @@ public class ParallelTextSearch {
     ArrayBlockingQueue[] workers = new ArrayBlockingQueue[treeCount];
     ArrayBlockingQueue resultsOutputArray = new ArrayBlockingQueue(treeCount * 10);
 
+    // experimenting
+    MessageJNI test = new MessageJNI();
+
     // worker 1 testing
     String[] list0 = extractFile(filenames.get(0));
     workers[0] = new ArrayBlockingQueue(10);
     workers[0].add("con");
     workers[0].add("but");
     workers[0].add("yes");
-    new Worker(filenames.get(0), list0, 0, workers[0], resultsOutputArray).start();
+    new Worker(filenames.get(0), list0, 0, workers[0], resultsOutputArray).run();
   }
 
   /*

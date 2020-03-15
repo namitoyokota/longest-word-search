@@ -27,12 +27,12 @@ class Worker extends Thread {
         boolean found = this.textTrieTree.contains(prefix);
 
         if (!found) {
-          System.out.println("not found :(");
+          System.out.println(passageName + ":" + prefix + " not found");
           // System.out.println("Worker-" + this.id + " " + req.requestID + ":" + prefix +
           // " ==> not found ");
           resultsOutputArray.put(passageName + ":" + prefix + " not found");
         } else {
-          System.out.println("found!");
+          System.out.println(passageName + ":" + prefix + " found");
           // System.out.println("Worker-" + this.id + " " + req.requestID + ":" + prefix +
           // " ==> " + word);
           resultsOutputArray.put(passageName + ":" + prefix + " found");
