@@ -1,12 +1,9 @@
 package edu.cs300;
 
+import CtCILibrary.*;
 import java.util.concurrent.*;
-
-//statements only relevant on Mac; Use statements on readme instead
-//javac -h . MessageJNI.java
-//gcc -c -fPIC -I${JAVA_HOME}/include -I${JAVA_HOME}/include/darwin system5_msg.c -o edu_cs300_MessageJNI.o
-//gcc -dynamiclib -o libsystem5msg.dylib edu_cs300_MessageJNI.o -lc
-//java -cp . -Djava.library.path=. edu.cs300.MessageJNI
+import java.io.*;
+import java.util.*;
 
 public class MessageJNI {
 
@@ -15,16 +12,101 @@ public class MessageJNI {
     }
 
     public static void main(String[] args) {
-        System.out.println(new MessageJNI().readPrefixRequestMsg());
-        new MessageJNI().writeLongestWordResponseMsg(1, "con", 1, "Mandfield_Park.txt", "nyokota", 1, 1);
-        new MessageJNI().writeLongestWordResponseMsg(2, "pre", 2, "Peter_Pan.txt", "nyokota", 2, 1);
-        new MessageJNI().writeLongestWordResponseMsg(3, "wor", 3, "Pride_And_Prejustice", "nyokota", 3, 1);
+        // main vars
+        int treeCount = 0, count = 0;
+        ArrayList<String> filenames = new ArrayList<String>();
+
+        // read in passages.txt for passage filenames
+        try {
+            File file = new File("passages.txt");
+            FileReader fr = new FileReader(file);
+            BufferedReader br = new BufferedReader(fr);
+            String line;
+            while ((line = br.readLine()) != null) {
+                filenames.add(line);
+                count++;
+            }
+            treeCount = count;
+            fr.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // initialize workers and output array
+        ArrayBlockingQueue[] prefixes = new ArrayBlockingQueue[treeCount];
+        ArrayBlockingQueue resultsOutputArray = new ArrayBlockingQueue(treeCount * 10);
+        String[][] list = new String[treeCount][];
+
+        // multithreaded starts here!
+        Thread[] threads = new Thread[treeCount];
+        for (int i = 0; i < treeCount; i++) {
+            threads[i] = new Thread();
+            threads[i].start();
+            list[i] = extractFile(filenames.get(i));
+            prefixes[i] = new ArrayBlockingQueue(10);
+            prefixes[i].add("con");
+            prefixes[i].add("pre");
+            prefixes[i].add("wor");
+            new Worker(filenames.get(i), list[i], i, prefixes[i], resultsOutputArray).run();
+        }
+        for (int j = 0; j < treeCount; j++) {
+            try {
+                threads[j].join();
+            } catch (InterruptedException e) {
+                System.out.println("error :(");
+            }
+        }
+
+        // worker 1 testing
+        // String[] list0 = extractFile(filenames.get(0));
+        // prefixes[0] = new ArrayBlockingQueue(10);
+        // for (int i = 0; i < 3; i++) {
+        // prefixes[0].add(new MessageJNI().readPrefixRequestMsg().prefix);
+        // }
+        // new Worker(list0, 0, prefixes[0], resultsOutputArray).run();
+
+        // testing!! its working!!
+        // System.out.println(new MessageJNI().readPrefixRequestMsg().prefix);
+        // new MessageJNI().writeLongestWordResponseMsg(1, "con", 1,
+        // "Mandfield_Park.txt", "nyokota", 1, 1);
+        // new MessageJNI().writeLongestWordResponseMsg(2, "pre", 2, "Peter_Pan.txt",
+        // "nyokota", 2, 1);
+        // new MessageJNI().writeLongestWordResponseMsg(3, "wor", 3,
+        // "Pride_And_Prejustice", "nyokota", 3, 1);
     }
 
+    /*
+     * Extract a text file and return a trie object with all of the words from the
+     * file
+     */
+    public static String[] extractFile(String filename) {
+        ArrayList<String> list = new ArrayList<String>();
+        Scanner sc2 = null;
+        try {
+            sc2 = new Scanner(new File(filename));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        while (sc2.hasNextLine()) {
+            Scanner s2 = new Scanner(sc2.nextLine());
+            while (s2.hasNext()) {
+                String s = s2.next();
+                list.add(s);
+                // System.out.println(s);
+            }
+        }
+        String[] array = new String[list.size()];
+        array = list.toArray(array);
+        return array;
+    }
+
+    // dont know why this function is needed haha. maybe to check id and key?
     private static native String readStringMsg();
 
+    // read type 1 messages from the system v queue
     public static native SearchRequest readPrefixRequestMsg();
 
+    // write type 2 messages into the system v queue
     public static native void writeLongestWordResponseMsg(int prefixID, String prefix, int passageIndex,
             String passageName, String longestWord, int passageCount, int present);
 

@@ -16,7 +16,7 @@ class Worker extends Thread {
     this.prefixRequestArray = prefix;
     this.resultsOutputArray = results;
     this.id = id;
-    this.passageName = filename;// put name of passage here
+    this.passageName = filename;
   }
 
   public void run() {
