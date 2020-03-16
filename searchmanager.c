@@ -27,10 +27,11 @@ int main(int argc, char **argv)
   key_t key;
   prefix_buf sbuf;
   size_t buf_length;
-  int delay;
+  int wait;
   response_buf rbuf;
   int ret;
-  int num_passages = 4;
+  int num_messages = 0;
+  int num_passages = 5;
 
   if (argc <= 2)
   {
@@ -39,7 +40,7 @@ int main(int argc, char **argv)
     exit(-1);
   }
 
-  delay = atoi(argv[1]);
+  wait = atoi(argv[1]);
 
   // get key and id
   key = ftok(CRIMSON_ID, QUEUE_NUMBER);
@@ -56,11 +57,11 @@ int main(int argc, char **argv)
   // loop through all prefixes
   for (int i = 2; argv[i] != NULL; i++)
   {
-    // send a message: type 1
+    num_messages++;
     sbuf.mtype = 1;
     strlcpy(sbuf.prefix, argv[i], WORD_LENGTH);
     sbuf.id = i - 1;
-    buf_length = strlen(sbuf.prefix) + sizeof(int) + 1; //struct size without long int type
+    buf_length = strlen(sbuf.prefix) + sizeof(int) + 1;
 
     // send a message
     if ((msgsnd(msqid, &sbuf, buf_length, IPC_NOWAIT)) < 0)
@@ -72,30 +73,34 @@ int main(int argc, char **argv)
       exit(1);
     }
     else
-      fprintf(stderr, "Message(%d): \"%s\" Sent (%d bytes)\n", sbuf.id, sbuf.prefix, (int)buf_length);
-
-    // until all messages are received
-    for (int current_passage = 1; current_passage < num_passages; current_passage++)
     {
-      // receive a message: type 2
-      do
+      fprintf(stderr, "\nMessage(%d): \"%s\" Sent (%d bytes)\n", sbuf.id, sbuf.prefix, (int)buf_length);
+      printf("\nReport \"%s\"\n", sbuf.prefix);
+      // receive messages
+      response_buf rbufs[num_passages];
+      for (int current_passage = 0; current_passage < num_passages; current_passage++)
       {
-        // msgrcv: https://pubs.opengroup.org/onlinepubs/007908799/xsh/msgrcv.html
-        ret = msgrcv(msqid, &rbuf, sizeof(response_buf), 2, 0); //receive type 2 message
-        int errnum = errno;
-        if (ret < 0 && errno != EINTR)
+        do
         {
-          fprintf(stderr, "Value of errno: %d\n", errno);
-          perror("Error printed by perror");
-          fprintf(stderr, "Error receiving msg: %s\n", strerror(errnum));
-        }
-      } while ((ret < 0) && (errno == 4));
-      //fprintf(stderr,"msgrcv error return code --%d:$d--",ret,errno);
+          ret = msgrcv(msqid, &rbuf, sizeof(response_buf), 2, 0);
+          int errnum = errno;
+          if (ret < 0 && errno != EINTR)
+          {
+            fprintf(stderr, "Value of errno: %d\n", errno);
+            perror("Error printed by perror");
+            fprintf(stderr, "Error receiving msg: %s\n", strerror(errnum));
+          }
+        } while ((ret < 0) && (errno == 4));
+        rbufs[current_passage] = rbuf;
+      }
+      for (int i = 0; i < num_passages; i++)
+      {
 
-      if (rbuf.present == 1)
-        fprintf(stderr, "%ld, %d of %d, %s, size=%d\n", rbuf.mtype, rbuf.index, rbuf.count, rbuf.longest_word, ret);
-      else
-        fprintf(stderr, "%ld, %d of %d, not found, size=%d\n", rbuf.mtype, rbuf.index, rbuf.count, ret);
+        if (rbufs[i].present == 2)
+          printf("Passage %d - %s - %s\n", i, rbufs[i].location_description, rbufs[i].longest_word);
+        else
+          printf("Passage %d - %s - no word found\n", i, rbufs[i].location_description);
+      }
     }
   }
 
