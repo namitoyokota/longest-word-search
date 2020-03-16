@@ -32,7 +32,7 @@ int main(int argc, char **argv)
   response_buf rbuf;
   int ret;
   int num_messages = 0;
-  int num_passages = 5;
+  int num_passages = 6;
 
   if (argc <= 2)
   {
