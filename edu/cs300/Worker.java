@@ -2,6 +2,8 @@ package edu.cs300;
 
 import CtCILibrary.*;
 import java.util.concurrent.*;
+import java.io.*;
+import java.util.*;
 
 class Worker extends Thread {
 
@@ -30,6 +32,10 @@ class Worker extends Thread {
         String prefix = (String) this.prefixRequestArray.take();
         boolean found = this.textTrieTree.contains(prefix);
 
+        System.out.println();
+        System.out.println(textTrieTree.findPossibleStrings(prefix));
+        System.out.println();
+
         if (!found) {
           new MessageJNI().writeLongestWordResponseMsg(id, prefix, prefixRequestArray.size(), passageName,
               prefix + " " + prefix, 5, 0);
@@ -46,5 +52,4 @@ class Worker extends Thread {
       }
     }
   }
-
 }

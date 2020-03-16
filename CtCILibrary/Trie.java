@@ -54,4 +54,19 @@ public class Trie {
     public TrieNode getRoot() {
         return root;
     }
+
+    public String findPossibleStrings(String prefix) {
+        TrieNode lastNode = root;
+        int i = 0;
+        for (i = 0; i < prefix.length(); i++) {
+            lastNode = lastNode.getChild(prefix.charAt(i));
+            if (lastNode == null) {
+                return "that's it";
+            }
+        }
+        if (!lastNode.terminates()) {
+            return "something greater is there!";
+        }
+        return "that's it";
+    }
 }
