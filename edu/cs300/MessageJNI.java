@@ -56,23 +56,6 @@ public class MessageJNI {
                 System.out.println("error :(");
             }
         }
-
-        // worker 1 testing
-        // String[] list0 = extractFile(filenames.get(0));
-        // prefixes[0] = new ArrayBlockingQueue(10);
-        // for (int i = 0; i < 3; i++) {
-        // prefixes[0].add(new MessageJNI().readPrefixRequestMsg().prefix);
-        // }
-        // new Worker(list0, 0, prefixes[0], resultsOutputArray).run();
-
-        // testing!! its working!!
-        // System.out.println(new MessageJNI().readPrefixRequestMsg().prefix);
-        // new MessageJNI().writeLongestWordResponseMsg(1, "con", 1,
-        // "Mandfield_Park.txt", "nyokota", 1, 1);
-        // new MessageJNI().writeLongestWordResponseMsg(2, "pre", 2, "Peter_Pan.txt",
-        // "nyokota", 2, 1);
-        // new MessageJNI().writeLongestWordResponseMsg(3, "wor", 3,
-        // "Pride_And_Prejustice", "nyokota", 3, 1);
     }
 
     /*

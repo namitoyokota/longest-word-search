@@ -9,14 +9,18 @@ class Worker extends Thread {
   ArrayBlockingQueue prefixRequestArray;
   ArrayBlockingQueue resultsOutputArray;
   int id;
+  int index;
   String passageName;
+  int origPrefixSize;
 
   public Worker(String filename, String[] words, int id, ArrayBlockingQueue prefix, ArrayBlockingQueue results) {
     this.textTrieTree = new Trie(words);
     this.prefixRequestArray = prefix;
     this.resultsOutputArray = results;
     this.id = id;
+    this.index = id;
     this.passageName = filename;
+    this.origPrefixSize = prefix.size();
   }
 
   public void run() {
@@ -27,14 +31,14 @@ class Worker extends Thread {
         boolean found = this.textTrieTree.contains(prefix);
 
         if (!found) {
+          new MessageJNI().writeLongestWordResponseMsg(id, prefix, prefixRequestArray.size(), passageName,
+              prefix + " " + prefix, 5, 0);
           System.out.println(passageName + ":" + prefix + " not found");
-          // System.out.println("Worker-" + this.id + " " + req.requestID + ":" + prefix +
-          // " ==> not found ");
           resultsOutputArray.put(passageName + ":" + prefix + " not found");
         } else {
+          new MessageJNI().writeLongestWordResponseMsg(id, prefix, prefixRequestArray.size(), passageName,
+              prefix + " " + prefix, 5, 1);
           System.out.println(passageName + ":" + prefix + " found");
-          // System.out.println("Worker-" + this.id + " " + req.requestID + ":" + prefix +
-          // " ==> " + word);
           resultsOutputArray.put(passageName + ":" + prefix + " found");
         }
       } catch (InterruptedException e) {
