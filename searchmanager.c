@@ -98,7 +98,7 @@ int main(int argc, char **argv)
       for (int i = 0; i < num_passages; i++)
       {
 
-        if (rbufs[i].present == 2)
+        if (rbufs[i].present == 1)
           printf("Passage %d - %s - %s\n", i, rbufs[i].location_description, rbufs[i].longest_word);
         else
           printf("Passage %d - %s - no word found\n", i, rbufs[i].location_description);
