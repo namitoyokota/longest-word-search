@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <unistd.h>
 #include "longest_word_search.h"
 #include "queue_ids.h"
 
@@ -27,7 +28,7 @@ int main(int argc, char **argv)
   key_t key;
   prefix_buf sbuf;
   size_t buf_length;
-  int wait;
+  int delay;
   response_buf rbuf;
   int ret;
   int num_messages = 0;
@@ -40,7 +41,7 @@ int main(int argc, char **argv)
     exit(-1);
   }
 
-  wait = atoi(argv[1]);
+  delay = atoi(argv[1]);
 
   // get key and id
   key = ftok(CRIMSON_ID, QUEUE_NUMBER);
@@ -63,6 +64,7 @@ int main(int argc, char **argv)
     sbuf.id = i - 1;
     buf_length = strlen(sbuf.prefix) + sizeof(int) + 1;
 
+    sleep(delay);
     // send a message
     if ((msgsnd(msqid, &sbuf, buf_length, IPC_NOWAIT)) < 0)
     {
