@@ -106,5 +106,7 @@ int main(int argc, char **argv)
     }
   }
 
+  printf("\nExiting ...\n");
+
   exit(0);
 }
