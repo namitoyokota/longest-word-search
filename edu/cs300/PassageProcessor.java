@@ -39,9 +39,9 @@ public class PassageProcessor {
       threads[i].start();
       list[i] = extractFile(filenames.get(i));
       prefixes[i] = new ArrayBlockingQueue(10);
-      prefixes[i].add("con");
-      prefixes[i].add("pre");
-      prefixes[i].add("wor");
+      prefixes[i].add(new MessageJNI().readPrefixRequestMsg().prefix);
+      prefixes[i].add(new MessageJNI().readPrefixRequestMsg().prefix);
+      prefixes[i].add(new MessageJNI().readPrefixRequestMsg().prefix);
       new Worker(filenames.get(i), list[i], i, prefixes[i], resultsOutputArray).run();
     }
     for (int j = 0; j < treeCount; j++) {
