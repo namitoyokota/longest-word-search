@@ -87,7 +87,6 @@ JNIEXPORT jstring JNICALL Java_edu_cs300_MessageJNI_readStringMsg(JNIEnv *env, j
  */
 JNIEXPORT jobject JNICALL Java_edu_cs300_MessageJNI_readPrefixRequestMsg(JNIEnv *env, jobject obj)
 {
-
     key_t key;
     int msqid;
     prefix_buf rbuf;
@@ -110,7 +109,7 @@ JNIEXPORT jobject JNICALL Java_edu_cs300_MessageJNI_readPrefixRequestMsg(JNIEnv 
         fprintf(stderr, "Error receiving msg: %s\n", strerror(errnum));
         strcpy(rbuf.prefix, "error"); //return error string to calling program
     }
-    fprintf(stderr, "id=%d prefix=%s\n", rbuf.id, rbuf.prefix);
+    // fprintf(stderr, "id=%d prefix=%s\n", rbuf.id, rbuf.prefix);
 
     // Create the object of the class UserData
     jclass searchRequestClass = (*env)->FindClass(env, "edu/cs300/SearchRequest");
@@ -149,47 +148,51 @@ JNIEXPORT void JNICALL Java_edu_cs300_MessageJNI_writeLongestWordResponseMsg(JNI
         fprintf(stderr, "Error sending msg: %s\n", strerror(errnum));
     }
     else
-        fprintf(stderr, "msgget: msgget succeeded: msgqid = %d\n", msqid);
-
-    const char *prefix = (*env)->GetStringUTFChars(env, prefixStr, NULL);
-    const char *passageName = (*env)->GetStringUTFChars(env, passageNameStr, NULL);
-    const char *longestWord = (*env)->GetStringUTFChars(env, longestWordStr, NULL);
-    int psl = strlen(passageName);
-    int lwl = strlen(longestWord);
-    int buffer_length = sizeof(response_buf) - sizeof(long); //int
-
-    printf("msgsnd Reply %d of %d on %d:%s from %s present=%d lw=%s(len=%d) msglen=%d\n", passageIndex, passageCount, prefixID, prefix, passageName, present, longestWord, lwl, buffer_length);
-
-    // // We'll send message type 1
-    rbuf.mtype = 2;
-    rbuf.index = passageIndex; //index of response
-    rbuf.count = passageCount; //total excerpts available
-    rbuf.present = present;    //0 if not found; 1 if found
-
-    if (present == 0)
     {
-        strlcpy(rbuf.location_description, passageName, PASSAGE_NAME_LENGTH);
-        strlcpy(rbuf.longest_word, "--", 2);
-    }
-    else
-    {
-        strlcpy(rbuf.location_description, passageName, PASSAGE_NAME_LENGTH);
-        strlcpy(rbuf.longest_word, longestWord, WORD_LENGTH);
-    }
-    //
-    // Send a message.
-    if ((msgsnd(msqid, &rbuf, buffer_length, IPC_NOWAIT)) < 0)
-    {
-        int errnum = errno;
+        //fprintf(stderr, "msgget: msgget succeeded: msgqid = %d\n", msqid);
 
-        perror("(msgsnd)");
-        fprintf(stderr, "Error sending msg: %s\n", strerror(errnum));
-        exit(1);
-    }
-    else
-        fprintf(stderr, "Message: \"%d:%s\" Sent\n", rbuf.index, rbuf.longest_word);
+        const char *prefix = (*env)->GetStringUTFChars(env, prefixStr, NULL);
+        const char *passageName = (*env)->GetStringUTFChars(env, passageNameStr, NULL);
+        const char *longestWord = (*env)->GetStringUTFChars(env, longestWordStr, NULL);
+        int psl = strlen(passageName);
+        int lwl = strlen(longestWord);
+        int buffer_length = sizeof(response_buf) - sizeof(long); //int
 
-    (*env)->ReleaseStringUTFChars(env, prefixStr, prefix);
-    (*env)->ReleaseStringUTFChars(env, passageNameStr, passageName);
-    (*env)->ReleaseStringUTFChars(env, longestWordStr, longestWord);
+        printf("msgsnd Reply %d of %d on %d:%s from %s present=%d lw=%s(len=%d) msglen=%d\n", passageIndex, passageCount, prefixID, prefix, passageName, present, longestWord, lwl, buffer_length);
+
+        // // We'll send message type 1
+        rbuf.mtype = 2;
+        rbuf.index = passageIndex; //index of response
+        rbuf.count = passageCount; //total excerpts available
+        rbuf.present = present;    //0 if not found; 1 if found
+
+        if (present == 0)
+        {
+            strlcpy(rbuf.location_description, passageName, PASSAGE_NAME_LENGTH);
+            strlcpy(rbuf.longest_word, "--", 2);
+        }
+        else
+        {
+            strlcpy(rbuf.location_description, passageName, PASSAGE_NAME_LENGTH);
+            strlcpy(rbuf.longest_word, longestWord, WORD_LENGTH);
+        }
+        //
+        // Send a message.
+        if ((msgsnd(msqid, &rbuf, buffer_length, IPC_NOWAIT)) < 0)
+        {
+            int errnum = errno;
+
+            perror("(msgsnd)");
+            fprintf(stderr, "Error sending msg: %s\n", strerror(errnum));
+            exit(1);
+        }
+        else
+        {
+            //fprintf(stderr, "Message: \"%d:%s\" Sent\n", rbuf.index, rbuf.longest_word);
+
+            (*env)->ReleaseStringUTFChars(env, prefixStr, prefix);
+            (*env)->ReleaseStringUTFChars(env, passageNameStr, passageName);
+            (*env)->ReleaseStringUTFChars(env, longestWordStr, longestWord);
+        }
+    }
 }

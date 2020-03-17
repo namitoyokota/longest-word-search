@@ -25,28 +25,22 @@ class Worker extends Thread {
 
   public void run() {
     System.out.println("Worker-" + this.id + " (" + this.passageName + ") thread started ...");
-    while (this.prefixRequestArray.size() > 0) {
-      try {
-        String prefix = (String) this.prefixRequestArray.take();
-        boolean found = this.textTrieTree.contains(prefix);
+    while (this.prefixRequestArray.remainingCapacity() > 0) {
+      SearchRequest req = new MessageJNI().readPrefixRequestMsg();
+      this.prefixRequestArray.add(req.prefix);
+      String prefix = (String) req.prefix;
+      boolean found = this.textTrieTree.contains(prefix);
 
-        System.out.println();
-        System.out.println(textTrieTree.findPossibleStrings(prefix));
-        System.out.println();
-
-        if (!found) {
-          new MessageJNI().writeLongestWordResponseMsg(id, prefix, prefixRequestArray.size(), passageName,
-              prefix + " " + prefix, 5, 0);
-          System.out.println(passageName + ":" + prefix + " not found");
-          resultsOutputArray.put(passageName + ":" + prefix + " not found");
-        } else {
-          new MessageJNI().writeLongestWordResponseMsg(id, prefix, prefixRequestArray.size(), passageName,
-              prefix + " " + prefix, 5, 1);
-          System.out.println(passageName + ":" + prefix + " found");
-          resultsOutputArray.put(passageName + ":" + prefix + " found");
-        }
-      } catch (InterruptedException e) {
-        System.out.println(e.getMessage());
+      if (!found) {
+        System.out.println("Worker-" + this.id + " " + req.requestID + ":" + prefix + " ==> not found ");
+        new MessageJNI().writeLongestWordResponseMsg(id, prefix, prefixRequestArray.size(), passageName,
+            prefix + prefix, 3, 0);
+        // resultsOutputArray.put(passageName + ":" + prefix + " not found");
+      } else {
+        System.out.println("Worker-" + this.id + " " + req.requestID + ":" + prefix + " ==> " + prefix + prefix);
+        new MessageJNI().writeLongestWordResponseMsg(id, prefix, prefixRequestArray.size(), passageName,
+            prefix + prefix, 3, 1);
+        // resultsOutputArray.put(passageName + ":" + prefix + " found");
       }
     }
   }

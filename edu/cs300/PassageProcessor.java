@@ -7,8 +7,10 @@ import java.util.*;
 public class PassageProcessor {
 
   public static void main(String[] args) {
+
+    System.out.println("\n--------------------------------------\n");
     // main vars
-    int treeCount = 0, count = 0;
+    int num_passages = 6, num_prefixes = 3;
     ArrayList<String> filenames = new ArrayList<String>();
 
     // read in passages.txt for passage filenames
@@ -19,37 +21,23 @@ public class PassageProcessor {
       String line;
       while ((line = br.readLine()) != null) {
         filenames.add(line);
-        count++;
       }
-      treeCount = count;
       fr.close();
     } catch (IOException e) {
       e.printStackTrace();
     }
 
     // initialize workers and output array
-    ArrayBlockingQueue[] prefixes = new ArrayBlockingQueue[treeCount];
-    ArrayBlockingQueue resultsOutputArray = new ArrayBlockingQueue(treeCount * 10);
-    String[][] list = new String[treeCount][];
+    ArrayBlockingQueue[] prefixes = new ArrayBlockingQueue[num_passages];
+    ArrayBlockingQueue resultsOutputArray = new ArrayBlockingQueue(num_passages * 10);
+    String[][] words = new String[num_passages][];
 
     // multithreaded starts here!
-    Thread[] threads = new Thread[treeCount];
-    for (int i = 0; i < treeCount; i++) {
-      threads[i] = new Thread();
-      threads[i].start();
-      list[i] = extractFile(filenames.get(i));
-      prefixes[i] = new ArrayBlockingQueue(10);
-      prefixes[i].add(new MessageJNI().readPrefixRequestMsg().prefix);
-      prefixes[i].add(new MessageJNI().readPrefixRequestMsg().prefix);
-      prefixes[i].add(new MessageJNI().readPrefixRequestMsg().prefix);
-      new Worker(filenames.get(i), list[i], i, prefixes[i], resultsOutputArray).run();
-    }
-    for (int j = 0; j < treeCount; j++) {
-      try {
-        threads[j].join();
-      } catch (InterruptedException e) {
-        System.out.println("error :(");
-      }
+    for (int i = 0; i < num_passages; i++) {
+      words[i] = extractFile(filenames.get(i));
+      prefixes[i] = new ArrayBlockingQueue(num_prefixes);
+      Thread worker = new Thread(new Worker(filenames.get(i), words[i], i, prefixes[i], resultsOutputArray));
+      worker.start();
     }
   }
 
@@ -70,7 +58,6 @@ public class PassageProcessor {
       while (s2.hasNext()) {
         String s = s2.next();
         list.add(s);
-        // System.out.println(s);
       }
     }
     String[] array = new String[list.size()];
