@@ -1,63 +1,30 @@
 <!-- @format -->
 
-# System V Message Queues Longest Word Finder
+# Longest Word Finder
 
 ## Objective
-
 a multithreaded two process system that communicates via System V message queues designed to find the longest word that begins with the supplied prefix in a series of text passages
 
-## Search Manager Logic
+## Logic
 
-Search manager reads one or more prefixes from the command line, creates and sends prefix request messages (contains prefix string and prefix ID) via System V ipc queues and waits for the passage processor to return a series of responses. The search manager will print the results for each prefix as once all responses for that prefix have been received.
+### Search Manager Logic (written in C)
+reads one or more prefixes from the command line, creates and sends prefix request messages (contains prefix string and prefix ID) via System V ipc queues and waits for the passage processor to return a series of responses. The search manager will print the results for each prefix as once all responses for that prefix have been received.
 
-## Passage Processor Logic
+### Passage Processor Logic (written in Java)
+reads a series of passage file names from passages.txt. A thread will be created for each passage that builds Trie with words in the passage text, receives requests for longest word searches, searches the trie for the longest word and asynchronously returns the longest word.
 
-The passage processor will read a series of passage file names from passages.txt. A thread will be created for each passage that builds Trie with words in the passage text, receives requests for longest word searches, searches the trie for the longest word and asynchronously returns the longest word.
+## Commands
 
-## Instruction
+| **Command**                        | **Description**                      |
+|------------------------------------|--------------------------------------|
+| `make`                             | compile                              |
+| `make clean`                       | remove outputted files               |
+| `make manager`                    | execute passage processor program (java)   |
+| `make search`                        | execute search manager program (c)                          |
+| `ipcs -a`                             | displays the message queue                              |
+| `ipcs -Q [key]`                       | remove message queue              |
 
-1. Compile Java files: `make java`
-2. Compile C files: `make c`
-3. Execute with format: `./searchmanager <secs between sending prefix requests> <prefix1> <prefix2> ...`
-4. Clean output files: `make clean`
-
-## System V Commands
-
-- `ipcs -a` : displays the message queue
-- `ipcrm -Q [key]` : remove message queue
-
-## File Structure
-
-```
-project/
-└─── passage.txt
-└─── Pride_And_Prejustice.txt
-└─── Mansfield_Park.txt
-└─── The_Call_Of_The_Wild.txt
-└─── Tale_Of_Two_Cities.txt
-└─── Peter_Pan.txt
-└─── edu_cs300_MessageJNI.h
-└─── queue_ids.h
-└─── longest_word_search.h
-└─── searchmaneger.c
-└─── system5msg.c
-└─── <additional supporting c files>
-└─── <additional supporting c header files>
-└─── edu/
-│   └─── cs300/
-│       └─── SearchRequest.java
-│       └─── MessageJNI.java
-│       └─── Worker.java
-│       └─── PassageProcessor.java
-│       └─── <additional supporting java source>
-└─── CtCILibrary/
-│    └─── Trie.java
-│    └─── TrieNode.java
-└─── makefile
-└─── readme.md
-```
-
-## Additional Resources
-
-- System V Message Queue: https://www.softprayog.in/programming/interprocess-communication-using-system-v-message-queues-in-linux
-- JNI: https://www.baeldung.com/jni
+## Resources
+- [Project Files](https://github.com/monicadelaine/Spring_cs300_project)
+- [System V Message Queue](https://www.softprayog.in/programming/interprocess-communication-using-system-v-message-queues-in-linux)
+- [JNI](https://www.baeldung.com/jni)
