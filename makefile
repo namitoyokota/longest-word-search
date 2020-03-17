@@ -18,7 +18,7 @@ test-rcv:
 	./msgrcv
 
 test-java:
-	java -cp . -Djava.library.path=. edu.cs300.MessageJNI
+	java -cp . -Djava.library.path=. edu.cs300.PassageProcessor
 
 clean: 
 	rm -f ./msgsnd ./msgrcv ./searchmanager

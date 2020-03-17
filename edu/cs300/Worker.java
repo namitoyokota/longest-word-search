@@ -2,8 +2,6 @@ package edu.cs300;
 
 import CtCILibrary.*;
 import java.util.concurrent.*;
-import java.io.*;
-import java.util.*;
 
 class Worker extends Thread {
 
