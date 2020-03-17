@@ -4,7 +4,6 @@ all:
 	make package-CtCILibrary
 	make search-manager
 	make jni
-	clear
 
 # compile java files in ./edu/cs300/ package
 package-cs300:
@@ -16,7 +15,7 @@ package-CtCILibrary:
 
 # compile searchmanager
 search-manager:
-	gcc -std=c99 -D_GNU_SOURCE searchmanager.c -o searchmanager
+	gcc -std=c99 -D_GNU_SOURCE -lpthread searchmanager.c -o searchmanager
 
 # compile jni files to connect java with c
 jni:
@@ -25,10 +24,12 @@ jni:
 
 # run this on the first tab
 processor:
+	clear
 	java -cp . -Djava.library.path=. edu.cs300.PassageProcessor
 
 # run this on second tab
 manager:
+	clear
 	./searchmanager 3 con pre wor
 
 # useful tools
