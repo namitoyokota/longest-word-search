@@ -24,6 +24,6 @@ test-java:
 	java -cp . -Djava.library.path=. edu.cs300.PassageProcessor
 
 clean: 
-	rm -f ./msgsnd ./msgrcv ./searchmanager
+	rm -f ./msgsnd ./msgrcv ./searchmanager ./empty
 	rm -f ./edu/cs300/*.class ./CtCILibrary/*.class
 	rm -f *.so *.o
