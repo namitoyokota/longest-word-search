@@ -32,6 +32,9 @@ manager:
 	clear
 	./searchmanager 3 con pre wor
 
+parallel-text-search:
+	java -cp . -Djava.library.path=. edu.cs300.ParallelTextSearch
+
 # useful tools
 tools:
 	make empty-queue

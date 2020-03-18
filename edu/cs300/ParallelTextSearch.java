@@ -35,12 +35,16 @@ public class ParallelTextSearch {
     for (int i = 0; i < num_passages; i++) {
       words[i] = extractFile(filenames.get(i));
       for (int j = 0; j < words[i].length; j++) {
-        System.out.println(words[i][j]);
+        // System.out.println(words[i][j]);
       }
-      System.out.println();
+      // System.out.println();
     }
 
     Trie words1 = new Trie(words[0]);
+    ArrayList<String> possibles = new ArrayList<String>();
+    words1.getAllPossibilities(possibles, words1.getRoot(), "");
+    // System.out.println(words1.getAllPossibilities(possibles, words1.getRoot(),
+    // ""));
   }
 
   /*

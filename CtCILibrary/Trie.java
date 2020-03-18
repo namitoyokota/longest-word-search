@@ -1,7 +1,6 @@
 package CtCILibrary;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /* Implements a trie. We store the input list of words in tries so
  * that we can efficiently find words with a given prefix. 
@@ -54,5 +53,19 @@ public class Trie {
 
     public TrieNode getRoot() {
         return root;
+    }
+
+    public ArrayList<String> getAllPossibilities(ArrayList<String> possibles, TrieNode start, String current) {
+        for (char letter = 'a'; letter < 'z'; letter++) {
+            TrieNode next = start.getChild(letter);
+            if (next != null) {
+                current = current + next.getChar();
+                System.out.println("current: " + current);
+                getAllPossibilities(possibles, next, current);
+            } else {
+                possibles.add(current);
+            }
+        }
+        return possibles;
     }
 }
