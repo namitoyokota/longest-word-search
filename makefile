@@ -5,6 +5,10 @@ all:
 	make search-manager
 	make jni
 
+
+
+############ COMPILE ALL ############
+
 # compile java files in ./edu/cs300/ package
 package-cs300:
 	javac edu/cs300/*java
@@ -22,24 +26,35 @@ jni:
 	gcc -c -fPIC -I${JAVA_HOME}/include -I${JAVA_HOME}/include/linux system5msg.c -o edu_cs300_MessageJNI.o
 	gcc -shared -o libsystem5msg.so edu_cs300_MessageJNI.o -lc
 
-# run this on the first tab
+
+
+############ EXECUTE TWO PROCESSES ############
+
+# run this on the first tab (passage processor)
 processor:
 	clear
 	java -cp . -Djava.library.path=. edu.cs300.PassageProcessor
 
-# run this on second tab
+# run this on second tab (search manager)
 manager:
 	clear
 	./searchmanager 3 con pre wor
 
+
+
+############ SAMPLE PROGRAMS ############
+
+# reads queue contents using native C function and creates and sends a response message via the System V msg queue
+message-jni:
+	java -cp . -Djava.library.path=. edu.cs300.MessageJNI
+
+# illustrates use of Java threading, Trie and BlockingArrayQueue
 parallel-text-search:
 	java -cp . -Djava.library.path=. edu.cs300.ParallelTextSearch
 
-# useful tools
-tools:
-	make empty-queue
-	make send-message
-	make receive-message
+
+
+############ USEFUL TOOLS ############
 
 # empty the system v queue
 empty-queue:
@@ -53,7 +68,10 @@ send-message:
 receive-message:
 	gcc -std=c99 -D_GNU_SOURCE msgrcv_lwr.c -o msgrcv
 
-# remove all outputted files
+
+
+############ CLEAN DIRECTORY ############
+
 clean: 
 	rm -f ./msgsnd ./msgrcv ./searchmanager ./empty
 	rm -f ./edu/cs300/*.class ./CtCILibrary/*.class
