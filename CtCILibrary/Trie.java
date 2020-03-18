@@ -56,14 +56,15 @@ public class Trie {
     }
 
     public ArrayList<String> getAllPossibilities(ArrayList<String> possibles, TrieNode start, String current) {
-        for (char letter = 'a'; letter < 'z'; letter++) {
-            TrieNode next = start.getChild(letter);
-            if (next != null) {
-                current = current + next.getChar();
-                System.out.println("current: " + current);
-                getAllPossibilities(possibles, next, current);
+        for (char letter = 'a'; letter <= 'z'; letter++) {
+            TrieNode child = start.getChild(letter);
+            if (child == null) {
+                continue;
             } else {
-                possibles.add(current);
+                if (child.terminates()) {
+                    possibles.add(current.concat(String.valueOf(letter)));
+                }
+                getAllPossibilities(possibles, child, current.concat(String.valueOf(letter)));
             }
         }
         return possibles;
