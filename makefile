@@ -60,14 +60,6 @@ parallel-text-search:
 empty-queue:
 	gcc -std=c99 -D_GNU_SOURCE empty_queue.c -o empty
 
-# test: send type 1 message
-send-message:
-	gcc -std=c99 -D_GNU_SOURCE msgsnd_pr.c -o msgsnd
-
-# test: receive type 2 message
-receive-message:
-	gcc -std=c99 -D_GNU_SOURCE msgrcv_lwr.c -o msgrcv
-
 
 
 ############ CLEAN DIRECTORY ############
