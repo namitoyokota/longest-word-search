@@ -55,18 +55,41 @@ public class Trie {
         return root;
     }
 
-    public ArrayList<String> getAllPossibilities(ArrayList<String> possibles, TrieNode start, String current) {
+    public String getAllPossibilities(ArrayList<String> possibles, TrieNode start, String current, String prefix) {
         for (char letter = 'a'; letter <= 'z'; letter++) {
             TrieNode child = start.getChild(letter);
             if (child == null) {
                 continue;
             } else {
                 if (child.terminates()) {
-                    possibles.add(current.concat(String.valueOf(letter)));
+                    if (startsWith(current.concat(String.valueOf(letter)), prefix))
+                        possibles.add(current.concat(String.valueOf(letter)));
                 }
-                getAllPossibilities(possibles, child, current.concat(String.valueOf(letter)));
+                getAllPossibilities(possibles, child, current.concat(String.valueOf(letter)), prefix);
             }
         }
-        return possibles;
+        return getLongest(possibles);
+    }
+
+    public boolean startsWith(String word, String prefix) {
+        if (prefix.length() > word.length())
+            return false;
+        for (int i = 0; i < prefix.length(); i++) {
+            if (word.charAt(i) != prefix.charAt(i))
+                return false;
+        }
+        return true;
+    }
+
+    public String getLongest(ArrayList<String> words) {
+        if (!words.isEmpty()) {
+            String longest = words.get(0);
+            for (int i = 0; i < words.size(); i++) {
+                if (longest.length() < words.get(i).length())
+                    longest = words.get(i);
+            }
+            return longest;
+        }
+        return "";
     }
 }

@@ -42,7 +42,7 @@ public class ParallelTextSearch {
 
     Trie words1 = new Trie(words[0]);
     ArrayList<String> possibles = new ArrayList<String>();
-    System.out.println(words1.getAllPossibilities(possibles, words1.getRoot(), ""));
+    System.out.println(words1.getAllPossibilities(possibles, words1.getRoot(), "", "con"));
   }
 
   /*
