@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <ctype.h>
 #include "longest_word_search.h"
 #include "queue_ids.h"
 
@@ -55,7 +56,6 @@ int getNumPassages(char *filename)
   while ((read = getline(&line, &len, fp)) != -1)
   {
     count++;
-    printf("%s; count: %d", line, count);
   }
   fclose(fp);
 
@@ -91,22 +91,22 @@ void *searchmanager(void *ptr)
   // send message
   if ((msgsnd(msqid, &sbuf, buf_length, IPC_NOWAIT)) < 0)
   {
+    // error
     int errnum = errno;
     fprintf(stderr, "%d, %ld, %s, %d\n", msqid, sbuf.mtype, sbuf.prefix, (int)buf_length);
     perror("(msgsnd)");
     fprintf(stderr, "Error sending msg: %s\n", strerror(errnum));
     exit(1);
   }
-
   else
   {
+    // no error
     fprintf(stderr, "\nMessage(%d): \"%s\" Sent (%d bytes)\n", sbuf.id, sbuf.prefix, (int)buf_length);
-    msgsnd(msqid, &sbuf, buf_length, IPC_NOWAIT);
-    msgsnd(msqid, &sbuf, buf_length, IPC_NOWAIT);
-    msgsnd(msqid, &sbuf, buf_length, IPC_NOWAIT);
-    msgsnd(msqid, &sbuf, buf_length, IPC_NOWAIT);
-    msgsnd(msqid, &sbuf, buf_length, IPC_NOWAIT);
-    printf("\nReport \"%s\"\n", sbuf.prefix);
+    for (int i = 0; i < num_passages; i++)
+    {
+      msgsnd(msqid, &sbuf, buf_length, IPC_NOWAIT);
+    }
+
     // receive messages
     response_buf rbufs[num_passages];
     for (int current_passage = 0; current_passage < num_passages; current_passage++)
@@ -117,13 +117,17 @@ void *searchmanager(void *ptr)
         int errnum = errno;
         if (ret < 0 && errno != EINTR)
         {
+          // error
           fprintf(stderr, "Value of errno: %d\n", errno);
           perror("Error printed by perror");
           fprintf(stderr, "Error receiving msg: %s\n", strerror(errnum));
         }
-      } while ((ret < 0) && (errno == 4));
+      } while ((ret < 0) && (errno == 4) && (rbuf.index == current_passage + 1));
       rbufs[current_passage] = rbuf;
     }
+
+    // print report
+    printf("\nReport \"%s\"\n", sbuf.prefix);
     for (int i = 0; i < num_passages; i++)
     {
       if (rbufs[i].present == 1)
@@ -137,30 +141,52 @@ void *searchmanager(void *ptr)
 
 int main(int argc, char **argv)
 {
+
+  // command line format checking
+  if (argc <= 2)
+  {
+    printf("Error\n");
+    printf("Usage: %s <delay> <prefix1> <prefix2> ...\n", argv[0]);
+    return 0;
+  }
+  for (int i = 0; i < strlen(argv[1]); i++)
+  {
+    if (!isdigit(argv[1][i]))
+    {
+      printf("Error\n");
+      printf("delay should be a number\n");
+      return 0;
+    }
+  }
+  for (int i = 2; i < argc; i++)
+  {
+    if (strlen(argv[i]) < 3)
+    {
+      printf("Error\n");
+      printf("prefix string has to be at least 3 characters long\n");
+      return 0;
+    }
+  }
+
+  // variable initializations: system v message queue
   int msqid;
   int msgflg = IPC_CREAT | 0666;
   key_t key;
   prefix_buf sbuf;
   size_t buf_length;
-  int delay;
   response_buf rbuf;
   int ret;
-  int num_messages = 0;
+
+  // variable initializations: main
+  int delay = atoi(argv[1]);
+  int num_messages = argc - 2;
   int num_passages = getNumPassages("passages.txt");
-
-  if (argc <= 2)
-  {
-    printf("Error\n");
-    printf("Usage: %s <delay> <prefix1> <prefix2> ...\n", argv[0]);
-    exit(-1);
-  }
-
-  delay = atoi(argv[1]);
 
   // get key and id
   key = ftok(CRIMSON_ID, QUEUE_NUMBER);
   if ((msqid = msgget(key, msgflg)) < 0)
   {
+    // error
     int errnum = errno;
     fprintf(stderr, "Value of errno: %d\n", errno);
     perror("(msgget)");
@@ -168,13 +194,7 @@ int main(int argc, char **argv)
   }
   else
   {
-    // loop through all prefixes
-    for (int i = 2; argv[i] != NULL; i++)
-    {
-      num_messages++;
-    }
-
-    // create threads
+    // everything works -> create threads
     pthread_t threads[num_messages];
     struct thread_args args[num_messages];
     for (int i = 0; i < num_messages; i++)
