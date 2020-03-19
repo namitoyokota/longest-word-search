@@ -2,73 +2,46 @@ package edu.cs300;
 
 import CtCILibrary.*;
 import java.util.concurrent.*;
-import java.io.*;
-import java.util.*;
 
 public class ParallelTextSearch {
 
   public static void main(String[] args) {
 
-    System.out.println("\n--------------------------------------\n");
-    // main vars
-    int num_passages = 6;
-    ArrayList<String> filenames = new ArrayList<String>();
+    int treeCount = 2;
+    String[][] samples = { { "conspicuous", "parallel", "withering" }, { "coping", "figure", "parachute" } };
+    ArrayBlockingQueue[] workers = new ArrayBlockingQueue[treeCount];
+    ArrayBlockingQueue resultsOutputArray = new ArrayBlockingQueue(treeCount * 10);
 
-    // read in passages.txt for passage filenames
+    if (args.length == 0 || args[0].length() <= 2) {
+      System.out.println("Provide prefix (min 3 characters) for search i.e. con\n");
+      System.exit(0);
+    }
+
+    for (int i = 0; i < treeCount; i++) {
+      workers[i] = new ArrayBlockingQueue(10);
+    }
+
+    new Worker("filename", samples[0], 0, workers[0], resultsOutputArray).start();
+    new Worker("filename", samples[1], 1, workers[1], resultsOutputArray).start();
+
     try {
-      File file = new File("passages.txt");
-      FileReader fr = new FileReader(file);
-      BufferedReader br = new BufferedReader(fr);
-      String line;
-      while ((line = br.readLine()) != null) {
-        filenames.add(line);
+      workers[0].put(args[0]);
+      workers[1].put(args[0]);
+    } catch (InterruptedException e) {
+    }
+    ;
+
+    int counter = 0;
+
+    while (counter < treeCount) {
+      try {
+        String results = (String) resultsOutputArray.take();
+        System.out.println("results:" + results);
+        counter++;
+      } catch (InterruptedException e) {
       }
-      fr.close();
-    } catch (IOException e) {
-      e.printStackTrace();
+      ;
     }
-
-    // initialize workers and output array
-    String[][] words = new String[num_passages][];
-
-    // multithreaded starts here!
-    for (int i = 0; i < num_passages; i++) {
-      words[i] = extractFile(filenames.get(i));
-      for (int j = 0; j < words[i].length; j++) {
-        // System.out.println(words[i][j]);
-      }
-      // System.out.println();
-    }
-
-    Trie words1 = new Trie(words[0]);
-    ArrayList<String> possibles = new ArrayList<String>();
-    System.out.println(words1.getAllPossibilities(possibles, words1.getRoot(), "", "con"));
-  }
-
-  /*
-   * Extract a text file and return a trie object with all of the words from the
-   * file
-   */
-  public static String[] extractFile(String filename) {
-    ArrayList<String> list = new ArrayList<String>();
-    Scanner sc2 = null;
-    try {
-      sc2 = new Scanner(new File(filename));
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    }
-    while (sc2.hasNextLine()) {
-      Scanner s2 = new Scanner(sc2.nextLine());
-      while (s2.hasNext()) {
-        String s = s2.next();
-        s = s.replaceAll("[.]", "");
-        s = s.replaceAll("[,]", "");
-        list.add(s.toLowerCase());
-      }
-    }
-    String[] array = new String[list.size()];
-    array = list.toArray(array);
-    return array;
   }
 
 }
