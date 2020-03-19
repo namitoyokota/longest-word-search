@@ -54,14 +54,6 @@ parallel-text-search:
 
 
 
-############ USEFUL TOOLS ############
-
-# empty the system v queue
-empty-queue:
-	gcc -std=c99 -D_GNU_SOURCE empty_queue.c -o empty
-
-
-
 ############ CLEAN DIRECTORY ############
 
 clean: 
