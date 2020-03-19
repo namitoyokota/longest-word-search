@@ -40,6 +40,28 @@ size_t strlcpy(char *dst, const char *src, size_t size)
   return (srclen);
 }
 
+int getNumPassages(char *filename)
+{
+  FILE *fp;
+  char *line = NULL;
+  size_t len = 0;
+  ssize_t read;
+
+  fp = fopen(filename, "r");
+  if (fp == NULL)
+    exit(EXIT_FAILURE);
+
+  int count = 0;
+  while ((read = getline(&line, &len, fp)) != -1)
+  {
+    count++;
+    printf("%s; count: %d", line, count);
+  }
+  fclose(fp);
+
+  return count;
+}
+
 void *searchmanager(void *ptr)
 {
   pthread_mutex_lock(&lock);
@@ -124,7 +146,7 @@ int main(int argc, char **argv)
   response_buf rbuf;
   int ret;
   int num_messages = 0;
-  int num_passages = 6;
+  int num_passages = getNumPassages("passages.txt");
 
   if (argc <= 2)
   {
@@ -179,7 +201,6 @@ int main(int argc, char **argv)
     }
   }
 
-  pthread_exit(NULL);
   printf("\nExiting ...\n");
 
   exit(0);
