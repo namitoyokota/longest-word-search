@@ -10,7 +10,7 @@ public class PassageProcessor {
 
     System.out.println("\n--------------------------------------\n");
     // main vars
-    int num_passages = 6, num_prefixes = 3;
+    int num_passages = 0, num_prefixes = 3;
     ArrayList<String> filenames = new ArrayList<String>();
 
     // read in passages.txt for passage filenames
@@ -21,6 +21,7 @@ public class PassageProcessor {
       String line;
       while ((line = br.readLine()) != null) {
         filenames.add(line);
+        num_passages++;
       }
       fr.close();
     } catch (IOException e) {

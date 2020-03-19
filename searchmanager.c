@@ -122,7 +122,11 @@ void *searchmanager(void *ptr)
           perror("Error printed by perror");
           fprintf(stderr, "Error receiving msg: %s\n", strerror(errnum));
         }
-      } while ((ret < 0) && (errno == 4) && (rbuf.index == current_passage + 1));
+        else if (rbuf.index != current_passage + 1)
+        {
+          continue;
+        }
+      } while ((ret < 0) && (errno == 4));
       rbufs[current_passage] = rbuf;
     }
 
