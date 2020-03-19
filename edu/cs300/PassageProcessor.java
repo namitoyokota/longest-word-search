@@ -8,7 +8,6 @@ public class PassageProcessor {
 
   public static void main(String[] args) {
 
-    System.out.println("\n--------------------------------------\n");
     // main vars
     int num_passages = 0, num_prefixes = 3;
     ArrayList<String> filenames = new ArrayList<String>();
@@ -29,17 +28,30 @@ public class PassageProcessor {
     }
 
     // initialize workers and output array
-    ArrayBlockingQueue[] prefixes = new ArrayBlockingQueue[num_passages];
-    ArrayBlockingQueue resultsOutputArray = new ArrayBlockingQueue(num_passages * 10);
     String[][] words = new String[num_passages][];
 
-    // multithreaded starts here!
     for (int i = 0; i < num_passages; i++) {
       words[i] = extractFile(filenames.get(i));
-      prefixes[i] = new ArrayBlockingQueue(num_prefixes);
-      Thread worker = new Thread(new Worker(filenames.get(i), words[i], i, prefixes[i], resultsOutputArray));
-      worker.start();
     }
+
+    SearchRequest req = new MessageJNI().readPrefixRequestMsg();
+
+    while (true) {
+      if (req.requestID == 0) {
+        System.out.println("**prefix(" + req.requestID + ") received");
+        System.out.println("Terminating ...");
+        System.exit(0);
+      } else {
+        System.out.println("**prefix(" + req.requestID + ") " + req.prefix + " received");
+        for (int i = 0; i < num_passages; i++) {
+          Thread worker = new Thread(new Worker(req, filenames.get(i), words[i], req.requestID, i));
+          worker.start();
+        }
+        req = new MessageJNI().readPrefixRequestMsg();
+      }
+    }
+
+    //// multithreaded starts here!
   }
 
   /*

@@ -102,10 +102,6 @@ void *searchmanager(void *ptr)
   {
     // no error
     fprintf(stderr, "\nMessage(%d): \"%s\" Sent (%d bytes)\n", sbuf.id, sbuf.prefix, (int)buf_length);
-    for (int i = 0; i < num_passages; i++)
-    {
-      msgsnd(msqid, &sbuf, buf_length, IPC_NOWAIT);
-    }
 
     // receive messages
     response_buf rbufs[num_passages];
@@ -223,6 +219,21 @@ int main(int argc, char **argv)
     {
       pthread_join(threads[i], NULL);
     }
+  }
+
+  sbuf.mtype = 1;
+  strlcpy(sbuf.prefix, argv[1], WORD_LENGTH);
+  sbuf.id = 0;
+  buf_length = strlen(sbuf.prefix) + sizeof(int) + 1; //struct size without long int type
+
+  // Send a message.
+  if ((msgsnd(msqid, &sbuf, buf_length, IPC_NOWAIT)) < 0)
+  {
+    int errnum = errno;
+    fprintf(stderr, "%d, %ld, %s, %d\n", msqid, sbuf.mtype, sbuf.prefix, (int)buf_length);
+    perror("(msgsnd)");
+    fprintf(stderr, "Error sending msg: %s\n", strerror(errnum));
+    exit(1);
   }
 
   printf("\nExiting ...\n");
