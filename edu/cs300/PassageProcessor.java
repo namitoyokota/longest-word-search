@@ -57,7 +57,11 @@ public class PassageProcessor {
       Scanner s2 = new Scanner(sc2.nextLine());
       while (s2.hasNext()) {
         String s = s2.next();
-        list.add(s);
+        s = s.replaceAll("[.]", "");
+        s = s.replaceAll("[,]", "");
+        s = s.replaceAll("[!]", "");
+        s = s.replaceAll("[?]", "");
+        list.add(s.toLowerCase());
       }
     }
     String[] array = new String[list.size()];
