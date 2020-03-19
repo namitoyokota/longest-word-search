@@ -2,7 +2,6 @@ package edu.cs300;
 
 import CtCILibrary.*;
 import java.util.concurrent.*;
-import java.io.*;
 import java.util.*;
 
 class Worker extends Thread {
@@ -41,7 +40,7 @@ class Worker extends Thread {
         new MessageJNI().writeLongestWordResponseMsg(id, prefix, prefixRequestArray.size(), passageName, "", 3, 0);
         // resultsOutputArray.put(passageName + ":" + prefix + " not found");
       } else {
-        System.out.println("Worker-" + this.id + " " + req.requestID + ":" + prefix + " ==> " + prefix + prefix);
+        System.out.println("Worker-" + this.id + " " + req.requestID + ":" + prefix + " ==> " + longest);
         new MessageJNI().writeLongestWordResponseMsg(id, prefix, prefixRequestArray.size(), passageName, longest, 3, 1);
         // resultsOutputArray.put(passageName + ":" + prefix + " found");
       }
