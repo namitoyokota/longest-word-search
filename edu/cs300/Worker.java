@@ -11,13 +11,15 @@ class Worker extends Thread {
   int id;
   int index;
   String passageName;
+  int passageCount;
 
-  public Worker(SearchRequest req, String filename, String[] words, int prefix_id, int passage_id) {
+  public Worker(SearchRequest req, String filename, String[] words, int prefix_id, int passage_id, int passage_count) {
     this.req = req;
     this.textTrieTree = new Trie(words);
     this.id = prefix_id;
     this.index = passage_id;
     this.passageName = filename;
+    this.passageCount = passage_count;
   }
 
   public void run() {
@@ -30,12 +32,12 @@ class Worker extends Thread {
     String longest = this.textTrieTree.getAllPossibilities(possibles, this.textTrieTree.getRoot(), "", req.prefix);
 
     if (!found) {
-      System.out.println("Worker-" + this.id + " " + req.requestID + ":" + prefix + " ==> not found ");
-      new MessageJNI().writeLongestWordResponseMsg(this.index, prefix, this.id, passageName, "", 3, 0);
+      System.out.println("Worker-" + this.index + " " + req.requestID + ":" + prefix + " ==> not found ");
+      new MessageJNI().writeLongestWordResponseMsg(this.id, prefix, this.index, passageName, "", passageCount, 0);
       // resultsOutputArray.put(passageName + ":" + prefix + " not found");
     } else {
-      System.out.println("Worker-" + this.id + " " + req.requestID + ":" + prefix + " ==> " + longest);
-      new MessageJNI().writeLongestWordResponseMsg(this.index, prefix, this.id, passageName, longest, 3, 1);
+      System.out.println("Worker-" + this.index + " " + req.requestID + ":" + prefix + " ==> " + longest);
+      new MessageJNI().writeLongestWordResponseMsg(this.id, prefix, this.index, passageName, longest, passageCount, 1);
       // resultsOutputArray.put(passageName + ":" + prefix + " found");
     }
   }

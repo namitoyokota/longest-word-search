@@ -42,7 +42,7 @@ public class PassageProcessor {
         System.exit(0);
       } else {
         for (int i = 0; i < num_passages; i++) {
-          Thread worker = new Thread(new Worker(req, filenames.get(i), words[i], req.requestID, i));
+          Thread worker = new Thread(new Worker(req, filenames.get(i), words[i], req.requestID, i + 1, num_passages));
           worker.start();
         }
         req = new MessageJNI().readPrefixRequestMsg();
