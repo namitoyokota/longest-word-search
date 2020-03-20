@@ -242,7 +242,7 @@ int main(int argc, char **argv)
   }
 
   sbuf.mtype = 1;
-  strlcpy(sbuf.prefix, argv[1], WORD_LENGTH);
+  strlcpy(sbuf.prefix, " ", WORD_LENGTH);
   sbuf.id = 0;
   buf_length = strlen(sbuf.prefix) + sizeof(int) + 1; //struct size without long int type
 
@@ -254,6 +254,10 @@ int main(int argc, char **argv)
     perror("(msgsnd)");
     fprintf(stderr, "Error sending msg: %s\n", strerror(errnum));
     exit(1);
+  }
+  else
+  {
+    fprintf(stderr, "\nMessage(%d): \"%s\" Sent (%d bytes)\n", sbuf.id, sbuf.prefix, (int)buf_length);
   }
 
   printf("\nExiting ...\n");
