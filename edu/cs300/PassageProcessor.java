@@ -1,6 +1,5 @@
 package edu.cs300;
 
-import java.util.concurrent.*;
 import java.io.*;
 import java.util.*;
 
@@ -9,7 +8,7 @@ public class PassageProcessor {
   public static void main(String[] args) {
 
     // main vars
-    int num_passages = 0, num_prefixes = 3;
+    int num_passages = 0;
     ArrayList<String> filenames = new ArrayList<String>();
 
     // read in passages.txt for passage filenames
@@ -37,12 +36,11 @@ public class PassageProcessor {
     SearchRequest req = new MessageJNI().readPrefixRequestMsg();
 
     while (true) {
+      System.out.println("**prefix(" + req.requestID + ") " + req.prefix + " received");
       if (req.requestID == 0) {
-        System.out.println("**prefix(" + req.requestID + ") received");
         System.out.println("Terminating ...");
         System.exit(0);
       } else {
-        System.out.println("**prefix(" + req.requestID + ") " + req.prefix + " received");
         for (int i = 0; i < num_passages; i++) {
           Thread worker = new Thread(new Worker(req, filenames.get(i), words[i], req.requestID, i));
           worker.start();
