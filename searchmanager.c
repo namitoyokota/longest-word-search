@@ -62,6 +62,30 @@ int getNumPassages(char *filename)
   return count;
 }
 
+int findSpot(char *passages, char *text)
+{
+  FILE *fp;
+  char *line = NULL;
+  size_t len = 0;
+  ssize_t read;
+
+  fp = fopen(passages, "r");
+  if (fp == NULL)
+    exit(EXIT_FAILURE);
+
+  int count = 0;
+  while ((read = getline(&line, &len, fp)) != -1)
+  {
+    if (line[strlen(line) - 1] == '\n')
+      line[strlen(line) - 1] = '\0';
+    if (strcmp(line, text) == 0)
+      return count;
+    count++;
+  }
+  fclose(fp);
+  return count;
+}
+
 void *searchmanager(void *ptr)
 {
   pthread_mutex_lock(&lock);
@@ -118,12 +142,8 @@ void *searchmanager(void *ptr)
           perror("Error printed by perror");
           fprintf(stderr, "Error receiving msg: %s\n", strerror(errnum));
         }
-        else if (rbuf.index != current_passage + 1)
-        {
-          continue;
-        }
+        rbufs[findSpot("passages.txt", rbuf.location_description)] = rbuf;
       } while ((ret < 0) && (errno == 4));
-      rbufs[current_passage] = rbuf;
     }
 
     // print report

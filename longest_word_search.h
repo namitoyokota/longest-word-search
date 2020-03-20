@@ -22,7 +22,7 @@ typedef struct foundbuf
 	long mtype;																			// not in byte count
 	int index;																			// index of response - 4 bytes
 	int count;																			// total excerpts available - 4 bytes
-	int present;																		//0 if not found; 1 if found - 4 bytes
+	int present;																		// 0 if not found; 1 if found - 4 bytes
 	char location_description[PASSAGE_NAME_LENGTH]; // 32 bytes
 	char longest_word[WORD_LENGTH];									// 191 bytes
 } response_buf;
