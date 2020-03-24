@@ -26,30 +26,32 @@ public class PassageProcessor {
       e.printStackTrace();
     }
 
-    // initialize workers and output array
+    // initialize and store all words from all passages
     String[][] words = new String[num_passages][];
-
     for (int i = 0; i < num_passages; i++) {
       words[i] = extractFile(filenames.get(i));
     }
 
+    // receive request
     SearchRequest req = new MessageJNI().readPrefixRequestMsg();
-
     while (true) {
       System.out.println("**prefix(" + req.requestID + ") " + req.prefix + " received");
+      // if the requestId == 0, it is a signal to terminate the program
       if (req.requestID == 0) {
         System.out.println("Terminating ...");
         System.exit(0);
-      } else {
+      }
+      // if the requestId != 0, it is the id so start multithreaded search in all
+      // passages
+      else {
         for (int i = 0; i < num_passages; i++) {
           Thread worker = new Thread(new Worker(req, filenames.get(i), words[i], req.requestID, i + 1, num_passages));
           worker.start();
         }
+        // get new request
         req = new MessageJNI().readPrefixRequestMsg();
       }
     }
-
-    //// multithreaded starts here!
   }
 
   /*

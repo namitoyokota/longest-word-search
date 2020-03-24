@@ -13,6 +13,7 @@
 
 pthread_mutex_t lock;
 
+// paramaters to passed start a thread
 struct thread_args
 {
   pthread_t thread;
@@ -29,6 +30,7 @@ struct thread_args
   int num_passages;
 };
 
+// get the size of the string
 size_t strlcpy(char *dst, const char *src, size_t size)
 {
   size_t srclen;
@@ -41,6 +43,7 @@ size_t strlcpy(char *dst, const char *src, size_t size)
   return (srclen);
 }
 
+// get the total number of passages from 'passages.txt'
 int getNumPassages(char *filename)
 {
   FILE *fp;
@@ -62,6 +65,7 @@ int getNumPassages(char *filename)
   return count;
 }
 
+// find the passage number according to the 'passages.txt'
 int findSpot(char *passages, char *text)
 {
   FILE *fp;
@@ -86,6 +90,7 @@ int findSpot(char *passages, char *text)
   return count;
 }
 
+// start a new thread and sent type 1 message
 void *searchmanager(void *ptr)
 {
   pthread_mutex_lock(&lock);
@@ -105,29 +110,29 @@ void *searchmanager(void *ptr)
   int ret = arg->ret;
   int num_passages = arg->num_passages;
 
+  // delay the program by the given input
   sleep(delay);
 
+  // prepare type 1 message
   sbuf.mtype = 1;
   strlcpy(sbuf.prefix, prefix, WORD_LENGTH);
   sbuf.id = index;
   buf_length = strlen(sbuf.prefix) + sizeof(int) + 1;
 
   // send message
+  // error
   if ((msgsnd(msqid, &sbuf, buf_length, IPC_NOWAIT)) < 0)
   {
-    // error
     int errnum = errno;
     fprintf(stderr, "%d, %ld, %s, %d\n", msqid, sbuf.mtype, sbuf.prefix, (int)buf_length);
     perror("(msgsnd)");
     fprintf(stderr, "Error sending msg: %s\n", strerror(errnum));
     exit(1);
   }
+  // no error
   else
   {
-    // no error
     fprintf(stderr, "\nMessage(%d): \"%s\" Sent (%d bytes)\n", sbuf.id, sbuf.prefix, (int)buf_length);
-
-    // receive messages
     response_buf rbufs[num_passages];
     for (int current_passage = 0; current_passage < num_passages; current_passage++)
     {
@@ -159,6 +164,7 @@ void *searchmanager(void *ptr)
   pthread_mutex_unlock(&lock);
 }
 
+// main function
 int main(int argc, char **argv)
 {
 
@@ -204,17 +210,17 @@ int main(int argc, char **argv)
 
   // get key and id
   key = ftok(CRIMSON_ID, QUEUE_NUMBER);
+  // when case msgget fails
   if ((msqid = msgget(key, msgflg)) < 0)
   {
-    // error
     int errnum = errno;
     fprintf(stderr, "Value of errno: %d\n", errno);
     perror("(msgget)");
     fprintf(stderr, "Error msgget: %s\n", strerror(errnum));
   }
+  // everything works -> create threads
   else
   {
-    // everything works -> create threads
     pthread_t threads[num_messages];
     struct thread_args args[num_messages];
     for (int i = 0; i < num_messages; i++)
@@ -236,17 +242,17 @@ int main(int argc, char **argv)
 
     // join threads
     for (int i = 0; i < num_messages; i++)
-    {
       pthread_join(threads[i], NULL);
-    }
   }
 
+  // prepare to send terminate message
   sbuf.mtype = 1;
   strlcpy(sbuf.prefix, " ", WORD_LENGTH);
   sbuf.id = 0;
   buf_length = strlen(sbuf.prefix) + sizeof(int) + 1; //struct size without long int type
 
-  // Send a message.
+  // send message to quit program
+  // msgsnd failed then
   if ((msgsnd(msqid, &sbuf, buf_length, IPC_NOWAIT)) < 0)
   {
     int errnum = errno;
@@ -255,10 +261,9 @@ int main(int argc, char **argv)
     fprintf(stderr, "Error sending msg: %s\n", strerror(errnum));
     exit(1);
   }
+  // message sent successfully
   else
-  {
     fprintf(stderr, "\nMessage(%d): \"%s\" Sent (%d bytes)\n", sbuf.id, sbuf.prefix, (int)buf_length);
-  }
 
   printf("\nExiting ...\n");
 

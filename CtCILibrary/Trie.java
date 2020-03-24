@@ -55,6 +55,9 @@ public class Trie {
         return root;
     }
 
+    /*
+     * Returns all of the words stored in Trie
+     */
     public String getAllPossibilities(ArrayList<String> possibles, TrieNode start, String current, String prefix) {
         for (char letter = 'a'; letter <= 'z'; letter++) {
             TrieNode child = start.getChild(letter);
@@ -71,6 +74,9 @@ public class Trie {
         return getLongest(possibles);
     }
 
+    /*
+     * Checks if the word starts with the given prefix
+     */
     public boolean startsWith(String word, String prefix) {
         if (prefix.length() > word.length())
             return false;
@@ -81,6 +87,9 @@ public class Trie {
         return true;
     }
 
+    /*
+     * Returns the longest string word from the ArrayList
+     */
     public String getLongest(ArrayList<String> words) {
         if (!words.isEmpty()) {
             String longest = words.get(0);

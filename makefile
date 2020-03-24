@@ -6,7 +6,6 @@ all:
 	make jni
 
 
-
 ############ COMPILE ALL ############
 
 # compile java files in ./edu/cs300/ package
@@ -27,7 +26,6 @@ jni:
 	gcc -shared -o libsystem5msg.so edu_cs300_MessageJNI.o -lc
 
 
-
 ############ EXECUTE TWO PROCESSES ############
 
 # run this on the first tab (passage processor)
@@ -41,7 +39,6 @@ manager:
 	./searchmanager 3 con pre wor
 
 
-
 ############ SAMPLE PROGRAMS ############
 
 # reads queue contents using native C function and creates and sends a response message via the System V msg queue
@@ -51,7 +48,6 @@ message-jni:
 # illustrates use of Java threading, Trie and BlockingArrayQueue
 parallel-text-search:
 	java -cp . -Djava.library.path=. edu.cs300.ParallelTextSearch
-
 
 
 ############ CLEAN DIRECTORY ############
