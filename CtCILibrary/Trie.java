@@ -94,7 +94,7 @@ public class Trie {
         if (!words.isEmpty()) {
             String longest = words.get(0);
             for (int i = 0; i < words.size(); i++) {
-                if (longest.length() < words.get(i).length())
+                if (longest.length() <= words.get(i).length())
                     longest = words.get(i);
             }
             return longest;
