@@ -18,7 +18,9 @@ package-CtCILibrary:
 
 # compile searchmanager
 search-manager:
-	gcc -std=c99 -D_GNU_SOURCE -lpthread searchmanager.c -o searchmanager
+	gcc -c -std=c99 -D_GNU_SOURCE -lpthread searchmanager.c -o main.o
+	gcc -c -std=c99 -D_GNU_SOURCE -lpthread helper.c -o helper.o
+	gcc -std=c99 -D_GNU_SOURCE -lpthread main.o helper.o -o searchmanager
 
 # compile jni files to connect java with c
 jni:
