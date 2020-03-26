@@ -110,9 +110,6 @@ void *searchmanager(void *ptr)
   int ret = arg->ret;
   int num_passages = arg->num_passages;
 
-  // delay the program by the given input
-  sleep(delay);
-
   // prepare type 1 message
   sbuf.mtype = 1;
   strlcpy(sbuf.prefix, prefix, WORD_LENGTH);
@@ -238,6 +235,8 @@ int main(int argc, char **argv)
       args[i].ret = ret;
       args[i].num_passages = num_passages;
       pthread_create(&threads[i], NULL, searchmanager, (void *)&args[i]);
+      if (delay != 0)
+        sleep(delay);
     }
 
     // join threads
