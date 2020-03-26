@@ -3,7 +3,6 @@
 // main function
 int main(int argc, char **argv)
 {
-
   // command line format checking
   if (argc <= 2)
   {

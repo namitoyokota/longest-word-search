@@ -58,7 +58,6 @@ int getNumPassages(char *filename)
     count++;
   }
   fclose(fp);
-
   return count;
 }
 
@@ -171,5 +170,6 @@ void *receive(void *ptr)
     else
       printf("Passage %d - %s - no word found\n", i, rbufs[i].location_description);
   }
+
   pthread_mutex_unlock(&lock);
 }
