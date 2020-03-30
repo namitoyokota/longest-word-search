@@ -3,6 +3,8 @@
 // main function
 int main(int argc, char **argv)
 {
+  signal(SIGINT, sigintHandler);
+
   // command line format checking
   if (argc <= 2)
   {
@@ -27,6 +29,17 @@ int main(int argc, char **argv)
       printf("prefix string has to be at least 3 characters long\n");
       return 0;
     }
+    max_prefixes++;
+  }
+
+  prefixes = malloc(max_prefixes * sizeof(char *));
+  status = malloc(max_prefixes * sizeof(char *));
+  for (int i = 2; i < argc; i++)
+  {
+    prefixes[i - 2] = malloc(sizeof(argv[i]) * sizeof(char));
+    status[i - 2] = malloc(6 * sizeof(char));
+    strcpy(prefixes[i - 2], argv[i]);
+    strcpy(status[i - 2], "pending");
   }
 
   // variable initializations: system v message queue

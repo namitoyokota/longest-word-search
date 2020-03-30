@@ -1,33 +1,20 @@
-#include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/msg.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <unistd.h>
-#include <pthread.h>
-#include <ctype.h>
-#include "longest_word_search.h"
-#include "queue_ids.h"
+#include "helper.h"
 
-pthread_mutex_t lock;
+int max_prefixes = 0;
+char **prefixes;
+char **status;
 
-struct thread_args
+void sigintHandler(int sig_num)
 {
-  pthread_t thread;
-  int index;
-  char *prefix;
-  int msqid;
-  int msgflg;
-  key_t key;
-  prefix_buf sbuf;
-  size_t buf_length;
-  int delay;
-  response_buf rbuf;
-  int ret;
-  int num_passages;
-};
+  signal(SIGINT, sigintHandler);
+  printf("\n");
+  for (int i = 0; i < max_prefixes; i++)
+  {
+    printf("\n%s - %s", prefixes[i], status[i]);
+  }
+  printf("\n\n");
+  fflush(stdout);
+}
 
 size_t strlcpy(char *dst, const char *src, size_t size)
 {
@@ -159,6 +146,9 @@ void *receive(void *ptr)
       }
       rbufs[findSpot("passages.txt", rbuf.location_description)] = rbuf;
     } while ((ret < 0) && (errno == 4));
+    char buf[6];
+    snprintf(buf, 12, "%d of %d", current_passage + 1, num_passages); // puts string into buffer
+    strcpy(status[index - 1], buf);
   }
 
   // print report
@@ -170,6 +160,8 @@ void *receive(void *ptr)
     else
       printf("Passage %d - %s - no word found\n", i, rbufs[i].location_description);
   }
+
+  strcpy(status[index - 1], "done");
 
   pthread_mutex_unlock(&lock);
 }
