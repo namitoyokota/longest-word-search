@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 
   // variable initializations: main
   int delay = atoi(argv[1]);
-  int num_messages = argc - 2;
+  int num_messages = max_prefixes;
   int num_passages = getNumPassages("passages.txt");
 
   // get key and id

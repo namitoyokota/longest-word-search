@@ -26,7 +26,6 @@ bool checkConditions(int argc, char **argv)
       fprintf(stderr, "Error: Prefix '%s' is less than 3 characters long\n", argv[i]);
       for (int j = i; j < argc - 1; j++)
         argv[j] = argv[j + 1];
-      argc -= 1;
     }
     else
       max_prefixes++;
