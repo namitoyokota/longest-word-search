@@ -18,8 +18,10 @@ public class PassageProcessor {
       BufferedReader br = new BufferedReader(fr);
       String line;
       while ((line = br.readLine()) != null) {
-        filenames.add(line);
-        num_passages++;
+        if (fileExists(line)) {
+          filenames.add(line);
+          num_passages++;
+        }
       }
       fr.close();
     } catch (IOException e) {
@@ -52,6 +54,15 @@ public class PassageProcessor {
         req = new MessageJNI().readPrefixRequestMsg();
       }
     }
+  }
+
+  public static Boolean fileExists(String filename) {
+    try {
+      Scanner sc2 = new Scanner(new File(filename));
+    } catch (FileNotFoundException e) {
+      return false;
+    }
+    return true;
   }
 
   /*

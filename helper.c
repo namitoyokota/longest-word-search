@@ -85,7 +85,11 @@ int getNumPassages(char *filename)
   int count = 0;
   while ((read = getline(&line, &len, fp)) != -1)
   {
-    count++;
+    line[strcspn(line, "\n")] = 0;
+    FILE *f;
+    f = fopen(line, "r");
+    if (f != NULL)
+      count++;
   }
   fclose(fp);
   return count;
