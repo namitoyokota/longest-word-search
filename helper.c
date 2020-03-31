@@ -124,6 +124,8 @@ void *receive(void *ptr)
   int num_passages = arg->num_passages;
   response_buf rbufs[num_passages];
 
+  pthread_mutex_lock(&lock);
+
   for (int current_passage = 0; current_passage < num_passages; current_passage++)
   {
     do
@@ -142,6 +144,8 @@ void *receive(void *ptr)
     snprintf(buf, 12, "%d of %d", current_passage + 1, num_passages); // puts string into buffer
     strcpy(status[index - 1], buf);
   }
+
+  pthread_mutex_unlock(&lock);
 
   // print report
   printf("\nReport \"%s\"\n", prefix);
