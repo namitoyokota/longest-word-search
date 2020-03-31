@@ -1,4 +1,5 @@
 #include "helper.h"
+#include "systemv.h"
 
 // main function
 int main(int argc, char **argv)
@@ -7,41 +8,12 @@ int main(int argc, char **argv)
   signal(SIGINT, sigintHandler);
 
   // command line format checking
-  if (argc <= 2)
-  {
-    fprintf(stderr, "Usage: %s <delay> <prefix1> <prefix2> ...\n", argv[0]);
+  if (checkConditions(argc, argv))
     return 0;
-  }
-  for (int i = 0; i < strlen(argv[1]); i++)
-  {
-    if (!isdigit(argv[1][i]))
-    {
-      fprintf(stderr, "Error: Enter delay as an integer\n");
-      return 0;
-    }
-  }
-  for (int i = 2; i < argc; i++)
-  {
-    if (strlen(argv[i]) < 3)
-    {
-      fprintf(stderr, "Error: Prefix '%s' is less than 3 characters long\n", argv[i]);
-      for (int j = i; j < argc - 1; j++)
-        argv[j] = argv[j + 1];
-      argc -= 1;
-    }
-    else
-      max_prefixes++;
-  }
+  if (max_prefixes == 0)
+    return 0;
 
-  prefixes = malloc(max_prefixes * sizeof(char *));
-  status = malloc(max_prefixes * sizeof(char *));
-  for (int i = 2; i < argc; i++)
-  {
-    prefixes[i - 2] = malloc(sizeof(argv[i]) * sizeof(char));
-    status[i - 2] = malloc(6 * sizeof(char));
-    strcpy(prefixes[i - 2], argv[i]);
-    strcpy(status[i - 2], "pending");
-  }
+  allocateStatus(argc, argv);
 
   // variable initializations: system v message queue
   int msqid;

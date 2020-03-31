@@ -12,6 +12,7 @@
 #include <pthread.h>
 #include <ctype.h>
 #include <signal.h>
+#include <stdbool.h>
 #include "longest_word_search.h"
 #include "queue_ids.h"
 
@@ -37,6 +38,8 @@ struct thread_args
   int num_passages;
 };
 
+bool checkConditions(int argc, char **agrv);             // check for any invalid command line inputs
+void allocateStatus(int argc, char **argv);              // dynamically allocate space for status strings
 void sigintHandler(int sig_num);                         // signal handler to print status
 size_t strlcpy(char *dst, const char *src, size_t size); // get the size of the string
 int getNumPassages(char *filename);                      // get the total number of passages from 'passages.txt'
