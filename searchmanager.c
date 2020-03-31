@@ -3,6 +3,7 @@
 // main function
 int main(int argc, char **argv)
 {
+  // handle CTRL-C to print status
   signal(SIGINT, sigintHandler);
 
   // command line format checking
@@ -87,11 +88,13 @@ int main(int argc, char **argv)
       args[i].ret = ret;
       args[i].num_passages = num_passages;
     }
+
     // create threads for each prefix send and receive
     for (int i = 0; i < num_messages; i++)
     {
       pthread_create(&send_threads[i], NULL, send, (void *)&args[i]);
       pthread_create(&receive_threads[i], NULL, receive, (void *)&args[i]);
+      sleep(delay);
     }
 
     // join threads

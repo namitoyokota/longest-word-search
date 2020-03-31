@@ -74,8 +74,6 @@ int findSpot(char *passages, char *text)
 
 void *send(void *ptr)
 {
-  pthread_mutex_lock(&lock);
-
   struct thread_args *arg = (struct thread_args *)ptr;
   pthread_t thread = arg->thread;
   int index = arg->index;
@@ -89,8 +87,6 @@ void *send(void *ptr)
   response_buf rbuf = arg->rbuf;
   int ret = arg->ret;
   int num_passages = arg->num_passages;
-
-  sleep(delay);
 
   // prepare type 1 message
   sbuf.mtype = 1;
@@ -109,14 +105,10 @@ void *send(void *ptr)
   }
   else
     fprintf(stderr, "\nMessage(%d): \"%s\" Sent (%d bytes)\n", sbuf.id, sbuf.prefix, (int)buf_length);
-
-  pthread_mutex_unlock(&lock);
 }
 
 void *receive(void *ptr)
 {
-  pthread_mutex_lock(&lock);
-
   struct thread_args *arg = (struct thread_args *)ptr;
   pthread_t thread = arg->thread;
   int index = arg->index;
@@ -162,6 +154,4 @@ void *receive(void *ptr)
   }
 
   strcpy(status[index - 1], "done");
-
-  pthread_mutex_unlock(&lock);
 }
