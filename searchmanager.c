@@ -9,16 +9,14 @@ int main(int argc, char **argv)
   // command line format checking
   if (argc <= 2)
   {
-    printf("Error\n");
-    printf("Usage: %s <delay> <prefix1> <prefix2> ...\n", argv[0]);
+    fprintf(stderr, "Usage: %s <delay> <prefix1> <prefix2> ...\n", argv[0]);
     return 0;
   }
   for (int i = 0; i < strlen(argv[1]); i++)
   {
     if (!isdigit(argv[1][i]))
     {
-      printf("Error\n");
-      printf("delay should be a number\n");
+      fprintf(stderr, "Error: Enter delay as an integer\n");
       return 0;
     }
   }
@@ -26,11 +24,13 @@ int main(int argc, char **argv)
   {
     if (strlen(argv[i]) < 3)
     {
-      printf("Error\n");
-      printf("prefix string has to be at least 3 characters long\n");
-      return 0;
+      fprintf(stderr, "Error: Prefix '%s' is less than 3 characters long\n", argv[i]);
+      for (int j = i; j < argc - 1; j++)
+        argv[j] = argv[j + 1];
+      argc -= 1;
     }
-    max_prefixes++;
+    else
+      max_prefixes++;
   }
 
   prefixes = malloc(max_prefixes * sizeof(char *));
