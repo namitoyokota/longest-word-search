@@ -56,6 +56,6 @@ parallel-text-search:
 ############ CLEAN DIRECTORY ############
 
 clean: 
-	rm -f ./msgsnd ./msgrcv ./searchmanager ./empty
+	rm -f ./searchmanager
 	rm -f ./edu/cs300/*.class ./CtCILibrary/*.class
 	rm -f *.so *.o

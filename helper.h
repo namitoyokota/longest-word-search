@@ -5,13 +5,13 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <unistd.h>
 #include <pthread.h>
 #include <ctype.h>
 #include <signal.h>
+#include <string.h>
 #include <stdbool.h>
 #include "longest_word_search.h"
 #include "queue_ids.h"
@@ -24,17 +24,12 @@ extern char **status;
 // paramaters to passed start a thread
 struct thread_args
 {
-  pthread_t thread;
   int index;
   char *prefix;
   int msqid;
-  int msgflg;
-  key_t key;
   prefix_buf sbuf;
   size_t buf_length;
-  int delay;
   response_buf rbuf;
-  int ret;
   int num_passages;
 };
 

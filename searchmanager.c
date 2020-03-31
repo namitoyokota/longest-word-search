@@ -45,19 +45,15 @@ int main(int argc, char **argv)
     pthread_t send_threads[num_messages];
     pthread_t receive_threads[num_messages];
     struct thread_args args[num_messages];
+
     for (int i = 0; i < num_messages; i++)
     {
-      args[i].thread = receive_threads[i];
       args[i].index = i + 1;
       args[i].prefix = argv[i + 2];
       args[i].msqid = msqid;
-      args[i].msgflg = IPC_CREAT | 0666;
-      args[i].key = key;
       args[i].sbuf = sbuf;
       args[i].buf_length = buf_length;
-      args[i].delay = delay;
       args[i].rbuf = rbuf;
-      args[i].ret = ret;
       args[i].num_passages = num_passages;
     }
 
